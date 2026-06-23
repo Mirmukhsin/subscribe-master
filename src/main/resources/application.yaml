@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: Subscribe Master
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/subscribe_master"
+    username: postgres
+    password: 9779
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
