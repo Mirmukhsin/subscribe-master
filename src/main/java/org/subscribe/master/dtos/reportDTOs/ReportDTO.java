@@ -1,4 +1,4 @@
-package org.subscribe.master.dtos;
+package org.subscribe.master.dtos.reportDTOs;
 
 import org.subscribe.master.enums.Currency;
 

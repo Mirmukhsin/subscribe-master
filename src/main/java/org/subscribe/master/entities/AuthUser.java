@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.subscribe.master.enums.UserType;
+import org.subscribe.master.enums.UserRole;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,7 @@ public class AuthUser {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserType userType;
+    private UserRole role;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -64,23 +64,23 @@ public class AuthUser {
         this.password = password;
     }
 
-    public UserType getUserType() {
-        return userType;
+    public UserRole getRole() {
+        return role;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public AuthUser(String username, String email, String password, UserType userType, List<UserSubscription> userSubscriptions) {
+    public AuthUser(String username, String email, String password, UserRole role, List<UserSubscription> userSubscriptions) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.userType = userType;
+        this.role = role;
         this.userSubscriptions = userSubscriptions;
     }
 

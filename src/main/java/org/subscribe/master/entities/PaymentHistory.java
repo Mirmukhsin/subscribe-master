@@ -80,11 +80,4 @@ public class PaymentHistory {
         this.subscriber = subscriber;
     }
 
-    //    private String subscriptionName;
-
-//    private Double price;
-
-//    private SubscriptionType type;
-
-
 }

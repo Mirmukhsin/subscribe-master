@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.subscribe.master.enums.SubscriptionStatus;
 import org.subscribe.master.enums.SubscriptionType;
-import org.subscribe.master.services.UserSubscriptionService;
+import org.subscribe.master.services.userService.UserSubscriptionService;
 
 @RestController
 @RequestMapping("/users")
@@ -16,19 +16,17 @@ public class UserSubscriptionController {
         this.userSubscriptionService = userSubscriptionService;
     }
 
-    @PostMapping("/{id}/subscribe/{subId}")
-    public ResponseEntity<Void> subscribe(@PathVariable(name = "id") Long subscriberId,
-                                          @RequestParam SubscriptionType subscriptionType,
+    @PostMapping("/subscribe/{subId}")
+    public ResponseEntity<Void> subscribe(@RequestParam SubscriptionType subscriptionType,
                                           @PathVariable(name = "subId") Long subscriptionId) {
-        userSubscriptionService.subscribe(subscriptionId, subscriptionType, subscriberId);
+        userSubscriptionService.subscribe(subscriptionId, subscriptionType);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/unsubscribe/{subId}")
-    public ResponseEntity<Void> changeStatus(@PathVariable(name = "id") Long subscriberId,
-                                            @PathVariable(name = "subId") Long userSubscriptionId,
-                                            @RequestParam SubscriptionStatus status) {
-        userSubscriptionService.changeStatus(userSubscriptionId, subscriberId, status);
+    @PutMapping("/unsubscribe/{subId}")
+    public ResponseEntity<Void> changeStatus(@PathVariable(name = "subId") Long userSubscriptionId,
+                                             @RequestParam SubscriptionStatus status) {
+        userSubscriptionService.changeStatus(userSubscriptionId, status);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

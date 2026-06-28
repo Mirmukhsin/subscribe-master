@@ -1,4 +1,4 @@
-package org.subscribe.master.services.impl;
+package org.subscribe.master.services.subscriptionService.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,7 +9,7 @@ import org.subscribe.master.entities.Subscription;
 import org.subscribe.master.enums.Currency;
 import org.subscribe.master.exceptionHandling.customExceptions.ResourceNotFoundException;
 import org.subscribe.master.repositories.SubscriptionRepository;
-import org.subscribe.master.services.SubscriptionService;
+import org.subscribe.master.services.subscriptionService.SubscriptionService;
 import org.subscribe.master.utility.SubscriptionSpecification;
 
 @Service

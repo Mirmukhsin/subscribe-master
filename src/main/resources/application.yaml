@@ -9,7 +9,20 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
+
+  sql:
+    init:
+      mode: embedded
+
+jwt:
+  secretKey: 1875769ca11cc30bc1d820c10a2218ec3350abc9268dfff821ce8e4a969bf6f9

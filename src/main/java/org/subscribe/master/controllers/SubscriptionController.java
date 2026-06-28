@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.subscribe.master.entities.Subscription;
 import org.subscribe.master.enums.Currency;
-import org.subscribe.master.services.SubscriptionService;
+import org.subscribe.master.services.subscriptionService.SubscriptionService;
 
 @RestController
 @RequestMapping("/subs")

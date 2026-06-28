@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.subscribe.master.dtos.UserLoginDTO;
-import org.subscribe.master.dtos.UserRegisterDTO;
-import org.subscribe.master.services.UserService;
+import org.subscribe.master.dtos.authDTOs.LoginResponseDTO;
+import org.subscribe.master.dtos.authDTOs.UserLoginDTO;
+import org.subscribe.master.dtos.authDTOs.UserRegisterDTO;
+import org.subscribe.master.services.userService.UserService;
 
 @RestController
 @RequestMapping("/users")
@@ -26,8 +27,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody UserLoginDTO userLoginDTO) {
-        userService.login(userLoginDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody UserLoginDTO userLoginDTO) {
+        return new ResponseEntity<>(userService.login(userLoginDTO), HttpStatus.OK);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponseDTO> refreshToken(@RequestBody String refreshToken) {
+        return new ResponseEntity<>(userService.generateNewAccessToken(refreshToken), HttpStatus.OK);
     }
 }

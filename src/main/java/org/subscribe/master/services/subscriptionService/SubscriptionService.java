@@ -1,4 +1,4 @@
-package org.subscribe.master.services;
+package org.subscribe.master.services.subscriptionService;
 
 import org.springframework.data.domain.Page;
 import org.subscribe.master.entities.Subscription;

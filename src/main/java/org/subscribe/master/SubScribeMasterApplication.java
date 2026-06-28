@@ -3,16 +3,25 @@ package org.subscribe.master;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestClient;
 import org.subscribe.master.entities.Subscription;
 import org.subscribe.master.enums.Currency;
 import org.subscribe.master.repositories.SubscriptionRepository;
 
+import java.time.Duration;
 import java.util.List;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableCaching
+@EnableScheduling
 public class SubScribeMasterApplication {
 
     public static void main(String[] args) {
@@ -32,6 +41,21 @@ public class SubScribeMasterApplication {
                     new Subscription("Spotify", 10.0, Currency.USD, "Music")
             ));
         };
+    }
+
+    @Bean
+    public RestClient restClient() {
+        return RestClient.builder().build();
+    }
+
+    @Bean
+    public RedisCacheConfiguration redisCacheConfiguration() {
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofSeconds(5))
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(new GenericJackson2JsonRedisSerializer())
+                );
     }
 
 }

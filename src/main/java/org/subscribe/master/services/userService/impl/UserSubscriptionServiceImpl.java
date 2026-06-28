@@ -1,4 +1,4 @@
-package org.subscribe.master.services.impl;
+package org.subscribe.master.services.userService.impl;
 
 import org.springframework.stereotype.Service;
 import org.subscribe.master.entities.AuthUser;
@@ -13,7 +13,8 @@ import org.subscribe.master.repositories.PaymentHistoryRepository;
 import org.subscribe.master.repositories.SubscriptionRepository;
 import org.subscribe.master.repositories.UserRepository;
 import org.subscribe.master.repositories.UserSubscriptionRepository;
-import org.subscribe.master.services.UserSubscriptionService;
+import org.subscribe.master.services.userService.UserSubscriptionService;
+import org.subscribe.master.utility.SecurityUtility;
 
 import java.time.LocalDateTime;
 
@@ -23,18 +24,20 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
     private final UserSubscriptionRepository userSubscriptionRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final UserRepository userRepository;
+    private final SecurityUtility securityUtility;
 
-    public UserSubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserSubscriptionRepository userSubscriptionRepository, PaymentHistoryRepository paymentHistoryRepository, UserRepository userRepository) {
+    public UserSubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserSubscriptionRepository userSubscriptionRepository, PaymentHistoryRepository paymentHistoryRepository, UserRepository userRepository, SecurityUtility securityUtility) {
         this.subscriptionRepository = subscriptionRepository;
         this.userSubscriptionRepository = userSubscriptionRepository;
         this.paymentHistoryRepository = paymentHistoryRepository;
         this.userRepository = userRepository;
+        this.securityUtility = securityUtility;
     }
 
     @Override
-    public void subscribe(Long subscriptionId, SubscriptionType subscriptionType, Long subscriberId) {
-        boolean existedUserSub = userSubscriptionRepository.findByIdAndSubscriberIdAndIsDeleted(subscriptionId, subscriberId, false).isPresent();
-        if (existedUserSub){
+    public void subscribe(Long subscriptionId, SubscriptionType subscriptionType) {
+        boolean existedUserSub = userSubscriptionRepository.existsSubscription(subscriptionId, securityUtility.getCurrentUserId(), false);
+        if (existedUserSub) {
             throw new ConflictException("You already subscribed");
         }
 
@@ -43,8 +46,8 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
         Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow(() -> new ResourceNotFoundException("Subscription not found"));
 
         userSubscription.setSubscription(subscription);
-        //TODO: checccccccccccccccccck
-        AuthUser subscriber = userRepository.findById(subscriberId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        AuthUser subscriber = userRepository.findById(securityUtility.getCurrentUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         userSubscription.setSubscriber(subscriber);
 
         userSubscription.setType(subscriptionType);
@@ -58,14 +61,13 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
         }
 
         userSubscriptionRepository.save(userSubscription);
-        //TODO: checccccccccccccccccccccccccck
-        paymentHistoryRepository.save(new PaymentHistory(subscription, subscriber, "Paid", subscription.getPrice()));
+        paymentHistoryRepository.save(new PaymentHistory(subscription, subscriber, "PAID", subscription.getPrice()));
     }
 
     @Override
-    public void changeStatus(Long userSubscriptionId, Long subscriberId, SubscriptionStatus status) {
+    public void changeStatus(Long userSubscriptionId, SubscriptionStatus status) {
         UserSubscription userSubscription = userSubscriptionRepository
-                .findByIdAndSubscriberIdAndIsDeleted(userSubscriptionId, subscriberId, false)
+                .findUserSubscription(userSubscriptionId, securityUtility.getCurrentUserId(), false)
                 .orElseThrow(() -> new ResourceNotFoundException("Data not found"));
 
         if (status.equals(SubscriptionStatus.CANCELLED)) {

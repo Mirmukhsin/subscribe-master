@@ -1,5 +1,5 @@
 package org.subscribe.master.enums;
 
-public enum UserType {
+public enum UserRole {
     USER, ADMIN
 }

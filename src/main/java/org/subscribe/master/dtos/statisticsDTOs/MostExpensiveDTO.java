@@ -1,0 +1,12 @@
+package org.subscribe.master.dtos.statisticsDTOs;
+
+import org.subscribe.master.enums.Currency;
+
+public record MostExpensiveDTO(
+        String name,
+        String category,
+        Double price,
+        Currency currency,
+        Double priceInUzs
+) {
+}

@@ -1,6 +1,5 @@
 package org.subscribe.master.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,7 +9,7 @@ import org.subscribe.master.enums.SubscriptionType;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_subscriptons")
+@Table(name = "user_subscriptions")
 @EntityListeners(AuditingEntityListener.class)
 public class UserSubscription {
 
@@ -25,23 +24,21 @@ public class UserSubscription {
     private SubscriptionType type;
 
     @CreatedDate
-    private LocalDateTime subscriptionStartedDate;
+    private LocalDateTime startedDate;
 
     private LocalDateTime nextPaymentDate;
 
 
     private Boolean isDeleted = false;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_id")
     //TODO: CHEckkkkkkkkkkkkkkkkkkkkkkkkk
-//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Subscription subscription;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscriber_id")
     //TODO: CHEckkkkkkkkkkkkkkkkkkkkkkkkk
-//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AuthUser subscriber;
 
     public UserSubscription() {
@@ -76,8 +73,8 @@ public class UserSubscription {
         this.type = type;
     }
 
-    public LocalDateTime getSubscriptionStartedDate() {
-        return subscriptionStartedDate;
+    public LocalDateTime getStartedDate() {
+        return startedDate;
     }
 
     public LocalDateTime getNextPaymentDate() {
@@ -118,7 +115,7 @@ public class UserSubscription {
                 "id=" + id +
                 ", status=" + status +
                 ", type=" + type +
-                ", subscriptionStartedDate=" + subscriptionStartedDate +
+                ", startedDate=" + startedDate +
                 ", nextPaymentDate=" + nextPaymentDate +
                 ", isDeleted=" + isDeleted +
                 ", subscription=" + subscription.getName() +
