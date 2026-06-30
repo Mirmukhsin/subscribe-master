@@ -7,12 +7,22 @@ services:
       - '8080:8080'
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      - redis
+      - postgres
 
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: subscribe_master
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 9779
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - '5432:5432'
+
+  redis:
+    image: redis:trixie
+    ports:
+      - "6379:6379"

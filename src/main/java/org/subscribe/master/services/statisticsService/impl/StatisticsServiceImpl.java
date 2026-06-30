@@ -76,8 +76,6 @@ public class StatisticsServiceImpl implements StatisticsService {
             throw new ResourceNotFoundException("Payment history not found for given period");
         }
 
-        System.err.println(monthlyExpense);
-
         List<MonthlyTotalDTO> monthlyTotal = new ArrayList<>();
 
         monthlyExpense.forEach((date, dtos) -> {

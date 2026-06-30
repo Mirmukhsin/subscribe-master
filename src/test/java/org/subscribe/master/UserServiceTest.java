@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.subscribe.master.dtos.authDTOs.LoginResponseDTO;
+import org.subscribe.master.dtos.authDTOs.RegisterResponseDTO;
 import org.subscribe.master.dtos.authDTOs.UserLoginDTO;
 import org.subscribe.master.dtos.authDTOs.UserRegisterDTO;
 import org.subscribe.master.entities.AuthUser;
@@ -19,6 +20,7 @@ import org.subscribe.master.repositories.UserRepository;
 import org.subscribe.master.security.jwtConfiguration.JWTService;
 import org.subscribe.master.services.userService.impl.RefreshTokenServiceImpl;
 import org.subscribe.master.services.userService.impl.UserServiceImpl;
+import org.subscribe.master.utility.mappers.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,6 +45,9 @@ public class UserServiceTest {
     @Mock
     private RefreshTokenServiceImpl refreshTokenService;
 
+    @Mock
+    private UserMapper userMapper;
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -65,20 +70,26 @@ public class UserServiceTest {
 
         when(userRepository.findByEmail(dto.email())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
+        when(userMapper.userTORegisterResponseDTO(any(AuthUser.class))).thenReturn(new RegisterResponseDTO("John", "john@gmail.com", LocalDateTime.now()));
 
-        userService.register(dto);
+        RegisterResponseDTO register = userService.register(dto);
+
+        ArgumentCaptor<AuthUser> userCapture = ArgumentCaptor.forClass(AuthUser.class);
 
         verify(userRepository, times(1)).findByEmail(dto.email());
 
-        ArgumentCaptor<AuthUser> user = ArgumentCaptor.forClass(AuthUser.class);
+        verify(userRepository, times(1)).save(userCapture.capture());
 
-        verify(userRepository, times(1)).save(user.capture());
+        verify(userMapper, times(1)).userTORegisterResponseDTO(any(AuthUser.class));
 
-        AuthUser savedUser = user.getValue();
+        AuthUser savedUser = userCapture.getValue();
         assertThat(savedUser.getEmail()).isEqualTo(dto.email());
         assertThat(savedUser.getUsername()).isEqualTo(dto.username());
         assertThat(savedUser.getPassword()).isEqualTo("encodedPassword");
         assertThat(savedUser.getRole()).isEqualTo(UserRole.USER);
+
+        assertThat(register.username()).isEqualTo(dto.username());
+        assertThat(register.email()).isEqualTo(dto.email());
     }
 
     @Test

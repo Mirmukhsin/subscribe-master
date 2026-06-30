@@ -64,7 +64,7 @@ public class ReportServiceImpl implements ReportService {
 
         row.createCell(0).setCellValue("Subscription Name");
         row.createCell(1).setCellValue("Price");
-        row.createCell(4).setCellValue("Total Expense in UZS");
+        row.createCell(2).setCellValue("Total Expense in UZS");
 
         int dataRowIndex = 1;
 
