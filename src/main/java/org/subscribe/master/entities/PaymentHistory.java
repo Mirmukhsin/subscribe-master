@@ -20,7 +20,7 @@ public class PaymentHistory {
 
     private String reason;
 
-    private Double amount;
+    private Double amountInUZS;
 
     @ManyToOne
     @JoinColumn(name = "subscription_id")
@@ -33,11 +33,11 @@ public class PaymentHistory {
     public PaymentHistory() {
     }
 
-    public PaymentHistory(Subscription subscription, AuthUser subscriber, String reason, Double amount) {
+    public PaymentHistory(Subscription subscription, AuthUser subscriber, String reason, Double amountInUZS) {
         this.subscription = subscription;
         this.subscriber = subscriber;
         this.reason = reason;
-        this.amount = amount;
+        this.amountInUZS = amountInUZS;
     }
 
     public Long getId() {
@@ -56,12 +56,12 @@ public class PaymentHistory {
         this.reason = reason;
     }
 
-    public Double getAmount() {
-        return amount;
+    public Double getAmountInUZS() {
+        return amountInUZS;
     }
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
+    public void setAmountInUZS(Double amountInUZS) {
+        this.amountInUZS = amountInUZS;
     }
 
     public Subscription getSubscription() {

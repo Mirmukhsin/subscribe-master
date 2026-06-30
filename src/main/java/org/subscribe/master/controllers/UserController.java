@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.subscribe.master.dtos.authDTOs.LoginResponseDTO;
-import org.subscribe.master.dtos.authDTOs.UserLoginDTO;
-import org.subscribe.master.dtos.authDTOs.UserRegisterDTO;
+import org.subscribe.master.dtos.authDTOs.*;
 import org.subscribe.master.services.userService.UserService;
 
 @RestController
@@ -21,9 +19,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody UserRegisterDTO userRegisterDTO) {
-        userService.register(userRegisterDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody UserRegisterDTO userRegisterDTO) {
+        return new ResponseEntity<>(userService.register(userRegisterDTO), HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -34,5 +31,11 @@ public class UserController {
     @PostMapping("/refresh")
     public ResponseEntity<LoginResponseDTO> refreshToken(@RequestBody String refreshToken) {
         return new ResponseEntity<>(userService.generateNewAccessToken(refreshToken), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody UserLogoutDTO logoutDTO) {
+        userService.logout(logoutDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

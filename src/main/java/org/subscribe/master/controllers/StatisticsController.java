@@ -1,5 +1,6 @@
 package org.subscribe.master.controllers;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/mostExpSub")
-    public ResponseEntity<MostExpensiveDTO> getMostExp(@RequestParam LocalDate month) {
+    public ResponseEntity<MostExpensiveDTO> getMostExp(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate month) {
         return new ResponseEntity<>(statisticsService.getMostExpSubs(month), HttpStatus.OK);
     }
 
@@ -33,7 +34,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/expenseInPeriod")
-    public ResponseEntity<MonthlyTrendDTO> getMonthlyTrend(@RequestParam int period) {
+    public ResponseEntity<MonthlyTrendDTO> getMonthlyTrend(@RequestParam(defaultValue = "6") int period) {
         return new ResponseEntity<>(statisticsService.getMonthlyTrend(period), HttpStatus.OK);
     }
 }

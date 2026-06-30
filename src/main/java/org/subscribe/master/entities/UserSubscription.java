@@ -33,12 +33,10 @@ public class UserSubscription {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_id")
-    //TODO: CHEckkkkkkkkkkkkkkkkkkkkkkkkk
     private Subscription subscription;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscriber_id")
-    //TODO: CHEckkkkkkkkkkkkkkkkkkkkkkkkk
     private AuthUser subscriber;
 
     public UserSubscription() {

@@ -9,7 +9,6 @@ public record MonthlyExpenseDTO(
         String subName,
         Currency currency,
         Double subPrice,
-        Double total,
         Double totalInUzs
 ) {
 }

@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/test_db"
+    username: postgres
+    password: 9779
+
+  jpa:
+    hibernate:
+      ddl-auto: create

@@ -14,13 +14,20 @@ public class SecurityUtility {
         this.jwtService = jwtService;
     }
 
-    public Long getCurrentUserId() {
+    private String getAccessToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new BadCredentialsException("User not authenticated");
         }
-        String token = authentication.getCredentials().toString();
-        return jwtService.getUserId(token);
+        return authentication.getCredentials().toString();
+    }
+
+    public String getCurrentUserEmail() {
+        return jwtService.getEmail(getAccessToken());
+    }
+
+    public Long getCurrentUserId() {
+        return jwtService.getUserId(getAccessToken());
     }
 }

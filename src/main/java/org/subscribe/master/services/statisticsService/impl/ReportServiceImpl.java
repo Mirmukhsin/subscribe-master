@@ -1,18 +1,19 @@
 package org.subscribe.master.services.statisticsService.impl;
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.subscribe.master.dtos.reportDTOs.Report;
+import org.subscribe.master.dtos.reportDTOs.ReportDTO;
 import org.subscribe.master.exceptionHandling.customExceptions.ConflictException;
+import org.subscribe.master.exceptionHandling.customExceptions.ResourceNotFoundException;
 import org.subscribe.master.repositories.PaymentHistoryRepository;
 import org.subscribe.master.services.statisticsService.ReportService;
-import org.subscribe.master.utility.CurrencyConverter;
+import org.subscribe.master.utility.mappers.ReportMapper;
 import org.subscribe.master.utility.SecurityUtility;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,66 +21,59 @@ import java.util.List;
 @Service
 public class ReportServiceImpl implements ReportService {
     private final PaymentHistoryRepository paymentHistoryRepository;
-    private final CurrencyConverter currencyConverter;
     private final SecurityUtility securityUtility;
+    private final ReportMapper reportMapper;
 
-    public ReportServiceImpl(PaymentHistoryRepository paymentHistoryRepository, CurrencyConverter currencyConverter, SecurityUtility securityUtility) {
+    public ReportServiceImpl(PaymentHistoryRepository paymentHistoryRepository, SecurityUtility securityUtility, ReportMapper reportMapper) {
         this.paymentHistoryRepository = paymentHistoryRepository;
-        this.currencyConverter = currencyConverter;
         this.securityUtility = securityUtility;
+        this.reportMapper = reportMapper;
     }
 
 
     @Override
-    public List<Report> getAnnuallyReport(LocalDate startDate, LocalDate endDate) {
+    public byte[] getAnnuallyReport(LocalDate startDate, LocalDate endDate) {
 
         LocalDateTime from = startDate.atStartOfDay();
         LocalDateTime to = endDate.atStartOfDay();
 
+        List<ReportDTO> forReport = paymentHistoryRepository.getForReport(securityUtility.getCurrentUserId(), from, to);
+        System.err.println(forReport);
+        if (forReport.isEmpty()) {
+            throw new ResourceNotFoundException("Subscription payment history not found for given period");
+        }
 
-        List<Report> reports = paymentHistoryRepository.getForReport(securityUtility.getCurrentUserId(), from, to)
-                .stream()
-                .map(dto -> new Report(
-                        dto.getSubscriptionName(),
-                        dto.getPrice(),
-                        dto.getCurrency(),
-                        currencyConverter.convertToUZS(
-                                dto.getPrice(),
-                                dto.getCurrency()
-                        ),
-                        dto.getAmount(),
-                        currencyConverter.convertToUZS(
-                                dto.getAmount(),
-                                dto.getCurrency()
-                        )
-                )).toList();
+        List<Report> reports = forReport
+                .stream().map(reportDTO ->
+                {
+                    Report report = reportMapper.reportDtoToReport(reportDTO);
+                    report.setTotalExpenseInMainCurrency(reportDTO.getAmountInUZS());
+                    return report;
+                }).toList();
         try {
-            generatingReportInExcel(reports);
-            return reports;
+            return generatingExcelBytes(reports);
         } catch (Exception e) {
             throw new ConflictException(e.getMessage());
         }
     }
 
-    public void generatingReportInExcel(List<Report> reports) throws Exception {
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("Subscription Report");
-        HSSFRow row = sheet.createRow(0);
+    public byte[] generatingExcelBytes(List<Report> reports) throws Exception {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Subscription Report");
+        XSSFRow row = sheet.createRow(0);
 
-        row.createCell(0).setCellValue("Name");
+        row.createCell(0).setCellValue("Subscription Name");
         row.createCell(1).setCellValue("Price");
-        row.createCell(2).setCellValue("In UZS");
-        row.createCell(3).setCellValue("Total Expense");
+        row.createCell(4).setCellValue("Total Expense in UZS");
 
         int dataRowIndex = 1;
 
         for (Report report : reports) {
-            HSSFRow dataRow = sheet.createRow(dataRowIndex);
+            XSSFRow dataRow = sheet.createRow(dataRowIndex);
 
             dataRow.createCell(0).setCellValue(report.getSubscriptionName());
-            dataRow.createCell(1).setCellValue(report.getPrice());
-            dataRow.createCell(2).setCellValue(report.getPriceInMainCurrency());
-            dataRow.createCell(3).setCellValue(report.getTotalExpense());
+            dataRow.createCell(1).setCellValue(report.getPrice() + "    " + report.getCurrency());
+            dataRow.createCell(2).setCellValue(report.getTotalExpenseInMainCurrency() + "   so`m");
 
             dataRowIndex++;
         }
@@ -88,12 +82,10 @@ public class ReportServiceImpl implements ReportService {
             sheet.autoSizeColumn(i);
         }
 
-        File currDir = new File(".");
-        String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length() - 1) + "report.xlsx";
-
-        FileOutputStream outputStream = new FileOutputStream(fileLocation);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
+
+        return outputStream.toByteArray();
     }
 }

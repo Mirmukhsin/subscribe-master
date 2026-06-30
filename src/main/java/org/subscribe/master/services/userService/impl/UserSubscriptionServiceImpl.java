@@ -1,6 +1,8 @@
 package org.subscribe.master.services.userService.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.subscribe.master.dtos.UserSubscriptionsResponseDTO;
 import org.subscribe.master.entities.AuthUser;
 import org.subscribe.master.entities.PaymentHistory;
 import org.subscribe.master.entities.Subscription;
@@ -14,8 +16,11 @@ import org.subscribe.master.repositories.SubscriptionRepository;
 import org.subscribe.master.repositories.UserRepository;
 import org.subscribe.master.repositories.UserSubscriptionRepository;
 import org.subscribe.master.services.userService.UserSubscriptionService;
+import org.subscribe.master.utility.CurrencyConverter;
 import org.subscribe.master.utility.SecurityUtility;
+import org.subscribe.master.utility.mappers.UserSubscriptionMapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -25,33 +30,39 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final UserRepository userRepository;
     private final SecurityUtility securityUtility;
+    private final CurrencyConverter currencyConverter;
+    private final UserSubscriptionMapper mapper;
 
-    public UserSubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserSubscriptionRepository userSubscriptionRepository, PaymentHistoryRepository paymentHistoryRepository, UserRepository userRepository, SecurityUtility securityUtility) {
+    public UserSubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserSubscriptionRepository userSubscriptionRepository, PaymentHistoryRepository paymentHistoryRepository, UserRepository userRepository, SecurityUtility securityUtility, CurrencyConverter currencyConverter, UserSubscriptionMapper mapper) {
         this.subscriptionRepository = subscriptionRepository;
         this.userSubscriptionRepository = userSubscriptionRepository;
         this.paymentHistoryRepository = paymentHistoryRepository;
         this.userRepository = userRepository;
         this.securityUtility = securityUtility;
+        this.currencyConverter = currencyConverter;
+        this.mapper = mapper;
     }
 
     @Override
-    public void subscribe(Long subscriptionId, SubscriptionType subscriptionType) {
+    @Transactional
+    public UserSubscriptionsResponseDTO subscribe(Long subscriptionId, SubscriptionType subscriptionType) {
         boolean existedUserSub = userSubscriptionRepository.existsSubscription(subscriptionId, securityUtility.getCurrentUserId(), false);
         if (existedUserSub) {
             throw new ConflictException("You already subscribed");
         }
 
-        UserSubscription userSubscription = new UserSubscription();
-
         Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow(() -> new ResourceNotFoundException("Subscription not found"));
+
+        AuthUser subscriber = userRepository.findById(securityUtility.getCurrentUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        UserSubscription userSubscription = new UserSubscription();
 
         userSubscription.setSubscription(subscription);
 
-        AuthUser subscriber = userRepository.findById(securityUtility.getCurrentUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         userSubscription.setSubscriber(subscriber);
 
         userSubscription.setType(subscriptionType);
-        userSubscription.setStatus(SubscriptionStatus.ACTIVE);
+        userSubscription.setStatus(SubscriptionStatus.ACTIVATED);
 
         LocalDateTime now = LocalDateTime.now();
         switch (subscriptionType) {
@@ -61,7 +72,16 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
         }
 
         userSubscriptionRepository.save(userSubscription);
-        paymentHistoryRepository.save(new PaymentHistory(subscription, subscriber, "PAID", subscription.getPrice()));
+
+        PaymentHistory paymentHistory = new PaymentHistory(
+                subscription,
+                subscriber,
+                userSubscription.getStatus().name(),
+                currencyConverter.convertToUZS(subscription.getPrice(), subscription.getCurrency(), LocalDate.now())
+        );
+        paymentHistoryRepository.save(paymentHistory);
+
+        return mapper.userSubToDTO(userSubscription);
     }
 
     @Override

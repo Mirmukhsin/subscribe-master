@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-subscriptions-table
+      author: panda
+      changes:
+        - createTable:
+            tableName: subscriptions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: insert-data
+      author: panda
+      changes:
+        - loadData:
+            tableName: subscriptions
+            file: db/data/subscriptions.csv

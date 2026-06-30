@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-payment-histories-table
+      author: panda
+      changes:
+        - createTable:
+            tableName: payment_histories
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: payment_date
+                  type: timestamp
+              - column:
+                  name: reason
+                  type: varchar(255)
+              - column:
+                  name: amount_inuzs
+                  type: double precision
+                  constraints:
+                    nullable: false
+              - column:
+                  name: subscription_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_hist_subscription
+                    referencedTableName: subscriptions
+                    referencedColumnNames: id
+              - column:
+                  name: subscriber_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_payment_hist_subscriber
+                    referencedTableName: users
+                    referencedColumnNames: id
+  - changeSet:
+      id: insert-data
+      author: panda
+      changes:
+        - loadData:
+            tableName: payment_histories
+            file: db/data/payment_histories.csv

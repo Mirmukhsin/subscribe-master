@@ -9,16 +9,16 @@ public class ReportDTO {
 
     private Currency currency;
 
-    private Double amount;
+    private Double amountInUZS;
 
     public ReportDTO() {
     }
 
-    public ReportDTO(String subscriptionName, Double price, Currency currency, Double amount) {
+    public ReportDTO(String subscriptionName, Double price, Currency currency, Double amountInUZS) {
         this.subscriptionName = subscriptionName;
         this.price = price;
         this.currency = currency;
-        this.amount = amount;
+        this.amountInUZS = amountInUZS;
     }
 
     public String getSubscriptionName() {
@@ -45,11 +45,21 @@ public class ReportDTO {
         this.currency = currency;
     }
 
-    public Double getAmount() {
-        return amount;
+    public Double getAmountInUZS() {
+        return amountInUZS;
     }
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
+    public void setAmountInUZS(Double amountInUZS) {
+        this.amountInUZS = amountInUZS;
+    }
+
+    @Override
+    public String toString() {
+        return "ReportDTO{" +
+                "subscriptionName='" + subscriptionName + '\'' +
+                ", price=" + price +
+                ", currency=" + currency +
+                ", amount=" + amountInUZS +
+                '}';
     }
 }

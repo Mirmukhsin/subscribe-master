@@ -6,7 +6,7 @@ SELECT setval('payment_histories_id_seq', (SELECT MAX(id) FROM payment_histories
 
 
 INSERT INTO users
-    (id, username, email, password, user_type, created_at, updated_at)
+    (id, username, email, password, role, created_at, updated_at)
 VALUES (1, 'admin', 'admin@subtracker.com', '$2a$12$MgUCLcb.XHBsR3twZW2QxOLYdi/OdH7bP7Jz2HjwgycbIkv7sbb/a', 'ADMIN', '2026-01-01 09:00:00', '2026-01-01 09:00:00'),
 
        (2, 'john_doe', 'john@gmail.com', '$2a$12$Jx1lRIH1g.w1EExIC./Qfu4Fy2IdpqBAz0jVAS7A2YFAMnW.StVyq', 'USER', '2026-01-02 10:15:00', '2026-01-02 10:15:00'),

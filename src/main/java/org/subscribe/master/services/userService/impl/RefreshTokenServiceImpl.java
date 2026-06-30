@@ -61,4 +61,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshToken.setRevoked(true);
         refreshTokenRepository.save(refreshToken);
     }
+
+    @Override
+    public void revokeAllTokens(Long userId) {
+        refreshTokenRepository.revokeAllUserTokens(userId);
+    }
 }

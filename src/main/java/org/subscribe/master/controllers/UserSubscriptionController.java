@@ -3,6 +3,7 @@ package org.subscribe.master.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.subscribe.master.dtos.UserSubscriptionsResponseDTO;
 import org.subscribe.master.enums.SubscriptionStatus;
 import org.subscribe.master.enums.SubscriptionType;
 import org.subscribe.master.services.userService.UserSubscriptionService;
@@ -17,10 +18,9 @@ public class UserSubscriptionController {
     }
 
     @PostMapping("/subscribe/{subId}")
-    public ResponseEntity<Void> subscribe(@RequestParam SubscriptionType subscriptionType,
-                                          @PathVariable(name = "subId") Long subscriptionId) {
-        userSubscriptionService.subscribe(subscriptionId, subscriptionType);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserSubscriptionsResponseDTO> subscribe(@RequestParam SubscriptionType subscriptionType,
+                                                                  @PathVariable(name = "subId") Long subscriptionId) {
+        return new ResponseEntity<>(userSubscriptionService.subscribe(subscriptionId, subscriptionType), HttpStatus.OK);
     }
 
     @PutMapping("/unsubscribe/{subId}")

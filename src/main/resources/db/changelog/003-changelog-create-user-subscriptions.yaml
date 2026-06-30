@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-subscriptions-table
+      author: panda
+      changes:
+        - createTable:
+            tableName: user_subscriptions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: started_date
+                  type: timestamp
+              - column:
+                  name: next_payment_date
+                  type: timestamp
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: subscription_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_subs_subscription
+                    referencedTableName: subscriptions
+                    referencedColumnNames: id
+              - column:
+                  name: subscriber_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_subs_subscriber
+                    referencedTableName: users
+                    referencedColumnNames: id
+  - changeSet:
+      id: insert-data
+      author: panda
+      changes:
+        - loadData:
+            tableName: user_subscriptions
+            file: db/data/user_subscriptions.csv

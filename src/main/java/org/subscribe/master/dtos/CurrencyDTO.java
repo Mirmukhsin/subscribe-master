@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record CurrencyDTO(
         @JsonProperty("Ccy") String ccy,
-        @JsonProperty("Rate") String rate
+        @JsonProperty("Rate") String rate,
+        @JsonProperty("Date") String date
 ) {
 }

@@ -1,11 +1,10 @@
 spring:
   application:
     name: Subscribe Master
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: "jdbc:postgresql://localhost:5432/subscribe_master"
-    username: postgres
-    password: 9779
+
+  profiles:
+    active: dev
+
   jpa:
     show-sql: true
     hibernate:
@@ -13,16 +12,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    enabled: true
   data:
     redis:
       host: localhost
       port: 6379
   cache:
     type: redis
-
-  sql:
-    init:
-      mode: embedded
 
 jwt:
   secretKey: 1875769ca11cc30bc1d820c10a2218ec3350abc9268dfff821ce8e4a969bf6f9

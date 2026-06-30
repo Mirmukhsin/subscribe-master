@@ -16,10 +16,10 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
 
     @Query(
             "select new org.subscribe.master.dtos.reportDTOs.ReportDTO(" +
-                    "ph.subscription.name,ph.subscription.price, ph.subscription.currency, sum(ph.amount)) " +
+                    "ph.subscription.name,ph.subscription.price, ph.subscription.currency, sum(ph.amountInUZS)) " +
                     "from PaymentHistory ph " +
                     "where ph.subscriber.id = :subscriberId " +
-                    "and ph.reason = 'PAID' " +
+                    "and ph.reason = 'ACTIVATED' " +
                     "and ph.paymentDate >= :from " +
                     "and ph.paymentDate <= :to " +
                     "group by ph.subscription.id, ph.subscription.name, ph.subscription.price, ph.subscription.currency"
@@ -27,19 +27,19 @@ public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, 
     List<ReportDTO> getForReport(Long subscriberId, LocalDateTime from, LocalDateTime to);
 
     @Query("select new org.subscribe.master.dtos.statisticsDTOs.MostExpensiveDTO(ph.subscription.name, ph.subscription.category, " +
-            "ph.subscription.price, ph.subscription.currency, 0.0) " +
+            "ph.subscription.price, ph.subscription.currency,ph.amountInUZS, ph.paymentDate) " +
             "from PaymentHistory ph " +
             "where ph.subscriber.id = :subscriberId " +
-            "and ph.reason = 'PAID'" +
+            "and ph.reason = 'ACTIVATED'" +
             "and ph.paymentDate >= :from " +
             "and ph.paymentDate <= :to " +
             "order by ph.subscription.price desc ")
     List<MostExpensiveDTO> getMostExp(Long subscriberId, LocalDateTime from, LocalDateTime to);
 
-    @Query("select new org.subscribe.master.dtos.statisticsDTOs.MonthlyExpenseDTO(ph.paymentDate,ph.subscription.name, ph.subscription.currency, ph.subscription.price, sum(ph.amount),0.0) " +
+    @Query("select new org.subscribe.master.dtos.statisticsDTOs.MonthlyExpenseDTO(ph.paymentDate,ph.subscription.name, ph.subscription.currency, ph.subscription.price, sum(ph.amountInUZS)) " +
             "from PaymentHistory ph " +
             "where ph.subscriber.id = :subscriberId " +
-            "and ph.reason = 'PAID'" +
+            "and ph.reason = 'ACTIVATED'" +
             "and ph.paymentDate >= :from " +
             "and ph.paymentDate <= :to " +
             "group by ph.paymentDate, ph.subscription.name, ph.subscription.currency, ph.subscription.price ")

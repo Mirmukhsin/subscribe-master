@@ -34,13 +34,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(
-                                        "/users/register]",
-                                        "users/login",
-                                        "subs/all",
+                                        "/users/register",
+                                        "/users/login",
+                                        "/users/refresh",
+
+                                        "/subs/all",
+
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",
                                         "/v3/api-docs/**")
                                 .permitAll()
+
+                                .requestMatchers(
+                                        "/subs/get/**").hasRole("ADMIN")
+
+                                .requestMatchers(
+                                        "users/statistics/mostExpSub"
+                                ).hasRole("USER")
+
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
@@ -48,7 +59,20 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-        ;
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                                    response.setStatus(401);
+                                    response.setContentType("application/json");
+                                    response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                                }
+                        )
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                    response.setStatus(403);
+                                    response.setContentType("application/json");
+                                    response.getWriter().write("{\"error\": \"Access Denied\"}");
+                                }
+                        )
+                );
 
         return http.build();
     }

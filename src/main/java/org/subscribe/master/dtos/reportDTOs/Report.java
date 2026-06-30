@@ -10,18 +10,12 @@ public class Report {
 
     private Currency currency;
 
-    private Double priceInMainCurrency;
-
-    private Double totalExpense;
-
     private Double totalExpenseInMainCurrency;
 
-    public Report(String subscriptionName, Double price, Currency currency, Double priceInMainCurrency, Double totalExpense, Double totalExpenseInMainCurrency) {
+    public Report(String subscriptionName, Double price, Currency currency, Double totalExpenseInMainCurrency) {
         this.subscriptionName = subscriptionName;
         this.price = price;
         this.currency = currency;
-        this.priceInMainCurrency = priceInMainCurrency;
-        this.totalExpense = totalExpense;
         this.totalExpenseInMainCurrency = totalExpenseInMainCurrency;
     }
 
@@ -42,22 +36,6 @@ public class Report {
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public Double getPriceInMainCurrency() {
-        return priceInMainCurrency;
-    }
-
-    public void setPriceInMainCurrency(Double priceInMainCurrency) {
-        this.priceInMainCurrency = priceInMainCurrency;
-    }
-
-    public Double getTotalExpense() {
-        return totalExpense;
-    }
-
-    public void setTotalExpense(Double annuallyExpense) {
-        this.totalExpense = annuallyExpense;
     }
 
     public Currency getCurrency() {

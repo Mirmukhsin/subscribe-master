@@ -1,6 +1,5 @@
 package org.subscribe.master;
 
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -11,12 +10,8 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestClient;
-import org.subscribe.master.entities.Subscription;
-import org.subscribe.master.enums.Currency;
-import org.subscribe.master.repositories.SubscriptionRepository;
 
 import java.time.Duration;
-import java.util.List;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -28,32 +23,18 @@ public class SubScribeMasterApplication {
         SpringApplication.run(SubScribeMasterApplication.class, args);
     }
 
-
-    @Bean
-    public CommandLineRunner runner(SubscriptionRepository subscriptionRepository) {
-        return args -> {
-            subscriptionRepository.saveAll(List.of(
-                    new Subscription("ChatGPT", 20.0, Currency.USD, "AI"),
-                    new Subscription("Claude.AI", 15.0, Currency.USD, "AI"),
-                    new Subscription("YouTube Premium", 30.0, Currency.USD, "Strimming"),
-                    new Subscription("Netflix", 25.0, Currency.USD, "Strimming"),
-                    new Subscription("Udemy", 9.0, Currency.USD, "Education"),
-                    new Subscription("Spotify", 10.0, Currency.USD, "Music")
-            ));
-        };
-    }
-
     @Bean
     public RestClient restClient() {
         return RestClient.builder().build();
     }
 
     @Bean
-    public RedisCacheConfiguration redisCacheConfiguration() {
+    public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(5))
+                .entryTtl(Duration.ofHours(24))
                 .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair
+                        RedisSerializationContext
+                                .SerializationPair
                                 .fromSerializer(new GenericJackson2JsonRedisSerializer())
                 );
     }
