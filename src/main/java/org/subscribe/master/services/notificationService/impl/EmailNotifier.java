@@ -36,7 +36,7 @@ public class EmailNotifier implements NotificationService {
                                 dto.subName(),
                                 dto.currency(),
                                 dto.price(),
-                                currencyConverter.convertToUZS(dto.price(), dto.currency(),LocalDate.now().plusDays(2)),
+                                currencyConverter.convertToUZS(dto.price(), dto.currency()),
                                 dto.startedDate(),
                                 dto.nextPaymentDate(),
                                 dto.type()

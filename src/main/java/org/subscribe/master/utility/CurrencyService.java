@@ -9,8 +9,6 @@ import org.subscribe.master.dtos.CurrencyDTO;
 import org.subscribe.master.enums.Currency;
 import org.subscribe.master.exceptionHandling.customExceptions.ResourceNotFoundException;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 @Service
@@ -26,7 +24,7 @@ public class CurrencyService {
 
 
     @Cacheable(value = "exchange-rates", key = "#currency")
-    public Double getRateToUzs(Currency currency, LocalDate givenDate) {
+    public Double getRateToUzs(Currency currency) {
 
         CurrencyDTO[] rates = restClient.get()
                 .uri(BASE_URL)
@@ -36,8 +34,7 @@ public class CurrencyService {
 
 
         return Arrays.stream(rates)
-                .filter(currencyDTO -> currencyDTO.ccy().equals(currency.name())
-                        && LocalDate.parse(currencyDTO.date(), DateTimeFormatter.ofPattern("dd.MM.yyyy")).equals(givenDate))
+                .filter(currencyDTO -> currencyDTO.ccy().equals(currency.name()))
                 .map(currencyDTO -> Double.parseDouble(currencyDTO.rate()))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Rate not found for currency: " + currency.name()));

@@ -5,7 +5,6 @@ import org.subscribe.master.enums.Currency;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 
 @Component
 public class CurrencyConverter {
@@ -16,13 +15,13 @@ public class CurrencyConverter {
         this.currencyService = currencyService;
     }
 
-    public Double convertToUZS(Double amount, Currency currency, LocalDate date) {
+    public Double convertToUZS(Double amount, Currency currency) {
 
         if (currency == Currency.UZS) {
             return BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP).doubleValue();
         }
 
-        Double rate = currencyService.getRateToUzs(currency,date);
+        Double rate = currencyService.getRateToUzs(currency);
 
         return BigDecimal.valueOf(amount * rate).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }

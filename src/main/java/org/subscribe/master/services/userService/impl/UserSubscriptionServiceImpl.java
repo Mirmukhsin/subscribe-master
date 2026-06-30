@@ -20,7 +20,6 @@ import org.subscribe.master.utility.CurrencyConverter;
 import org.subscribe.master.utility.SecurityUtility;
 import org.subscribe.master.utility.mappers.UserSubscriptionMapper;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -77,7 +76,7 @@ public class UserSubscriptionServiceImpl implements UserSubscriptionService {
                 subscription,
                 subscriber,
                 userSubscription.getStatus().name(),
-                currencyConverter.convertToUZS(subscription.getPrice(), subscription.getCurrency(), LocalDate.now())
+                currencyConverter.convertToUZS(subscription.getPrice(), subscription.getCurrency())
         );
         paymentHistoryRepository.save(paymentHistory);
 
