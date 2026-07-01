@@ -23,4 +23,5 @@ spring:
     type: redis
 
 jwt:
-  secretKey: ${JWT_SECRET_KEY}
+  secret:
+    key: ${JWT_SECRET_KEY}
