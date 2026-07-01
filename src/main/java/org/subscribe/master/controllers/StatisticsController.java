@@ -1,5 +1,7 @@
 package org.subscribe.master.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/users/statistics")
+@Tag(name = "Statistics API")
 public class StatisticsController {
     private final StatisticsService statisticsService;
 
@@ -23,16 +26,19 @@ public class StatisticsController {
         this.statisticsService = statisticsService;
     }
 
+    @Operation(summary = "Getting most expensive subscription in a month")
     @GetMapping("/mostExpSub")
     public ResponseEntity<MostExpensiveDTO> getMostExp(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate month) {
         return new ResponseEntity<>(statisticsService.getMostExpSubs(month), HttpStatus.OK);
     }
 
+    @Operation(summary = "Getting expenses in a month")
     @GetMapping("/monthlyExpense")
     public ResponseEntity<MonthlyTotalDTO> getMonthlyExpense(@RequestParam LocalDate month) {
         return new ResponseEntity<>(statisticsService.getMonthlyExpense(month), HttpStatus.OK);
     }
 
+    @Operation(summary = "Getting monthly expenses in a period")
     @GetMapping("/expenseInPeriod")
     public ResponseEntity<MonthlyTrendDTO> getMonthlyTrend(@RequestParam(defaultValue = "6") int period) {
         return new ResponseEntity<>(statisticsService.getMonthlyTrend(period), HttpStatus.OK);

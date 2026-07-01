@@ -1,5 +1,7 @@
 package org.subscribe.master.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.subscribe.master.services.subscriptionService.SubscriptionService;
 
 @RestController
 @RequestMapping("/subs")
+@Tag(name = "Subscription API", description = "Subscription management")
 public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
@@ -17,6 +20,7 @@ public class SubscriptionController {
         this.subscriptionService = subscriptionService;
     }
 
+    @Operation(summary = "Getting all subscriptions details")
     @GetMapping("/all")
     public ResponseEntity<Page<Subscription>> getAllSubs(
             @RequestParam(defaultValue = "2") int size,
@@ -28,6 +32,7 @@ public class SubscriptionController {
         return new ResponseEntity<>(subscriptionService.getAllSubscriptions(size, page, currency, maxPrice, lowPrice), HttpStatus.OK);
     }
 
+    @Operation(summary = "Getting a subscriptions by ID  (ADMIN only)")
     @GetMapping("/get/{id}")
     public ResponseEntity<Subscription> get(@PathVariable Long id) {
         return new ResponseEntity<>(subscriptionService.get(id), HttpStatus.OK);

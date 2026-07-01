@@ -1,5 +1,7 @@
 package org.subscribe.master.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "History Report", description = "History report printing")
 public class HistoryReportController {
     private final ReportService reportService;
 
@@ -21,6 +24,7 @@ public class HistoryReportController {
         this.reportService = reportService;
     }
 
+    @Operation(summary = "Download report file. (Excel file)")
     @GetMapping("/report/download")
     public ResponseEntity<byte[]> getReport(@RequestParam LocalDate startDate,
                                             @RequestParam LocalDate endDate) {
