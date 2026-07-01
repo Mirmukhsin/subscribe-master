@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.subscribe.master.exceptionHandling.customExceptions.BadCredentialsException;
 import org.subscribe.master.exceptionHandling.customExceptions.ConflictException;
 import org.subscribe.master.exceptionHandling.customExceptions.ResourceNotFoundException;
@@ -32,6 +33,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(responseDTO, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponseDTO> handleValidation(MethodArgumentTypeMismatchException exception, HttpServletRequest request) {
+        ErrorResponseDTO responseDTO = generateErrorResponse(exception, request, HttpStatus.BAD_REQUEST, "Validation error");
+        return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+    }
 
 
     private ErrorResponseDTO generateErrorResponse(Exception e, HttpServletRequest request, HttpStatus status, String title) {

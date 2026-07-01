@@ -2,7 +2,6 @@ package org.subscribe.master.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +27,7 @@ public class StatisticsController {
 
     @Operation(summary = "Getting most expensive subscription in a month")
     @GetMapping("/mostExpSub")
-    public ResponseEntity<MostExpensiveDTO> getMostExp(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate month) {
+    public ResponseEntity<MostExpensiveDTO> getMostExp(@RequestParam LocalDate month) {
         return new ResponseEntity<>(statisticsService.getMostExpSubs(month), HttpStatus.OK);
     }
 

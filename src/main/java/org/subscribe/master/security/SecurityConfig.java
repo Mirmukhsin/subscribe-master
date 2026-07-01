@@ -1,5 +1,7 @@
 package org.subscribe.master.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,19 +13,25 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.subscribe.master.exceptionHandling.ErrorResponseDTO;
 import org.subscribe.master.security.jwtConfiguration.JWTFilter;
+
+import java.time.Instant;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTFilter jwtFilter;
+    private final ObjectMapper objectMapper;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JWTFilter jwtFilter) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JWTFilter jwtFilter, ObjectMapper objectMapper) {
         this.customUserDetailsService = customUserDetailsService;
         this.jwtFilter = jwtFilter;
+        this.objectMapper = objectMapper;
     }
 
     @Bean
@@ -60,18 +68,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                                    response.setStatus(401);
-                                    response.setContentType("application/json");
-                                    response.getWriter().write("{\"error\": \"Unauthorized\"}");
-                                }
-                        )
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                                    response.setStatus(403);
-                                    response.setContentType("application/json");
-                                    response.getWriter().write("{\"error\": \"Access Denied\"}");
-                                }
-                        )
+                        .authenticationEntryPoint(authenticationEntryPoint())
                 );
 
         return http.build();
@@ -95,5 +92,20 @@ public class SecurityConfig {
         dao.setPasswordEncoder(passwordEncoder());
 
         return dao;
+    }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
+            authException.printStackTrace();
+            String path = request.getRequestURI();
+            String detail = authException.getMessage();
+            int status = 401;
+            ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(detail, status, detail, path, Instant.now());
+            response.setStatus(status);
+            ServletOutputStream outputStream = response.getOutputStream();
+            objectMapper.writeValue(outputStream, errorResponseDTO);
+        };
+
     }
 }

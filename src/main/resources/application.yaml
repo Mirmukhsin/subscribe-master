@@ -23,4 +23,4 @@ spring:
     type: redis
 
 jwt:
-  secretKey: 1875769ca11cc30bc1d820c10a2218ec3350abc9268dfff821ce8e4a969bf6f9
+  secretKey: ${JWT_SECRET_KEY}

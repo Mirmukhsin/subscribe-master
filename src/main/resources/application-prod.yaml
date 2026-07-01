@@ -6,8 +6,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: "jdbc:postgresql://postgres:5432/subscribe_master"
-    username: postgres
-    password: 9779
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   data:
     redis:

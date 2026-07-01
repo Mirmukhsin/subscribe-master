@@ -10,6 +10,17 @@ public class ErrorResponseDTO {
     private String path;
     private Instant timestamp;
 
+    public ErrorResponseDTO() {
+    }
+
+    public ErrorResponseDTO(String title, int status, String detail, String path, Instant timestamp) {
+        this.title = title;
+        this.status = status;
+        this.detail = detail;
+        this.path = path;
+        this.timestamp = timestamp;
+    }
+
     public String getTitle() {
         return title;
     }
